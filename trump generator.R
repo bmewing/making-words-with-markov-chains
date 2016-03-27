@@ -1,14 +1,10 @@
-library(readxl)
 library(dplyr)
 library(magrittr)
 
-readxl::excel_sheets("trump tweets.xlsx")
-tweets = readxl::read_excel("trump tweets.xlsx",sheet="langen fromrealDonaldTrump",skip=1) %>%
-  filter(!is.na(`Tweet Text`)) %>%
-  select(`Tweet Text`) %>%
-  .[[1]]
+data = readLines(file("tweets.txt"))
+tweets = gsub("^.*\\|.*\\|","",x = data)
 
-utf8tweets = iconv(tweets,to="UTF-8")
+utf8tweets = iconv(tweets,to="latin2//TRANSLIT")
 
 letterSets = function(x,n){
   buffer = paste(rep(" ",n),collapse="")
@@ -20,7 +16,7 @@ letterSets = function(x,n){
   o
 }
 
-n = 6
+n = 10
 
 set5 = lapply(utf8tweets,letterSets,n=n)
 usets = sort(unique(unlist(set5)))
@@ -59,7 +55,10 @@ makeTweet = function(n){
     word = paste0(word,nextLetter)
     state = substr(word,(nchar(word)-2),(nchar(word)))
   }
-  substr(word,n+1,(nchar(word)-3))
+  result = substr(word,n+1,(nchar(word)-3))
+  scores = stringdist::stringdist(result,tweets,method="lv")/nchar(result)
+  print(paste0("Most Similar: ",tweets[which.min(scores)]))
+  return(result)
 }
 
 makeTweet(n)
