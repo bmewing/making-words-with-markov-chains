@@ -65,5 +65,20 @@ makeTweet = function(n){
   substr(word,n+1,(nchar(word)-3))
 }
 
+makeTweet = function(n){
+  word = paste(rep(" ",n),collapse="")
+  state = "j"
+  while(state != "^^^"){
+    lastSet = substr(word,nchar(word)-n+1,nchar(word))
+    nextLetter = sample(ucharacters,1,prob=Pr[lastSet,])
+    word = paste0(word,nextLetter)
+    state = substr(word,(nchar(word)-2),(nchar(word)))
+  }
+  result = substr(word,n+1,(nchar(word)-3))
+  scores = stringdist::stringdist(result,tweets,method="cosine")
+  print(paste0("Most Similar: ",tweets[which.min(scores)]))
+  return(result)
+}
+
 
 makeTweet(n)

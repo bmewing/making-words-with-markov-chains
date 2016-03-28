@@ -56,7 +56,7 @@ makeTweet = function(n){
     state = substr(word,(nchar(word)-2),(nchar(word)))
   }
   result = substr(word,n+1,(nchar(word)-3))
-  scores = stringdist::stringdist(result,tweets,method="lv")/nchar(result)
+  scores = stringdist::stringdist(result,tweets,method="cosine")
   print(paste0("Most Similar: ",tweets[which.min(scores)]))
   return(result)
 }
